@@ -15,9 +15,6 @@ jobs:
       with:
         go-version: '^1.16'
 
-    - name: Build binary
-      run: go build -o myapp
-
     # Assuming the shell script is within the current repo, adjust paths as necessary
     - name: Run shell script for application setup and testing
       run: |
