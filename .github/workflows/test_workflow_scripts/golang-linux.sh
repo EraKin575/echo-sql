@@ -38,9 +38,14 @@ for i in {1..2}; do
   sleep 10 # Adjust based on application start time
 
   # Make API calls to record
-  curl --request POST --url http://localhost:8080/url --header 'content-type: application/json' --data '{"url": "https://google.com"}'
-  curl --request POST --url http://localhost:8080/url --header 'content-type: application/json' --data '{"url": "https://facebook.com"}'
-  curl -X GET http://localhost:8080/CJBKJd92
+curl --request POST \
+  --url http://localhost:8082/url \
+  --header 'content-type: application/json' \
+  --data '{
+  "url": "https://google.com"
+}'  
+curl --request GET \
+  --url http://localhost:8082/Lhr4BWAi
 
   sleep 5 # Allow time for recording
   sudo kill $(pgrep echoSql)
