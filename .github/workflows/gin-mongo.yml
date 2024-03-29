@@ -1,6 +1,6 @@
 name: Golang On Linux
 
-on: [pull_request]
+on: [push]
 
 jobs:
   golang_linux:
