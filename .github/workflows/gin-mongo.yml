@@ -25,7 +25,12 @@ jobs:
       env:
         GO111MODULE: on
 
-        
+    - name: Move Keploy binary to accessible location
+      run: sudo mv ./keploy/keploy /usr/local/bin
+
+    - name: Verify Keploy installation
+      run: keploy version
+
     - name: Run shell script for application setup and testing
       run: |
         chmod +x ./.github/workflows/test_workflow_scripts/golang-linux.sh
