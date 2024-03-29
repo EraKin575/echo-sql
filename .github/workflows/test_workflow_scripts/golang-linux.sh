@@ -1,11 +1,15 @@
 #!/bin/bash
 
+# Ensure the script stops on any error
+set -e
+
 # Assuming .github/workflows/test_workflow_scripts/test-iid.sh is executable and has the needed shebang
 ./../../.github/workflows/test_workflow_scripts/test-iid.sh
 
-# Switch to a specific branch if needed, this might be optional based on your CI/CD flow
-git fetch origin
-git checkout native-linux
+# Optionally switch to a specific branch if needed
+# Uncomment and set to your required branch if needed
+# git fetch origin
+# git checkout your-branch-name
 
 # Start a MongoDB container for the application's database needs
 docker run --rm -d -p 27017:27017 --name mongoDb mongo
@@ -14,7 +18,8 @@ docker run --rm -d -p 27017:27017 --name mongoDb mongo
 [ -f "./keploy.yml" ] && rm ./keploy.yml
 
 # Generate a new Keploy configuration file
-sudo ./../../keployv2 config --generate
+# Ensure keployv2 binary is in the PATH or provide an absolute path
+keployv2 config --generate
 
 # Update Keploy configuration for test specifics
 sed -i 's/global: {}/global: {"body": {"ts":[]}}/' "./keploy.yml"
@@ -28,7 +33,8 @@ go build -o ginApp
 
 # Record test cases and mocks with Keploy, adjusting for the application's startup
 for i in {1..2}; do
-  sudo -E env PATH="$PATH" ./../../keployv2 record -c "./ginApp" &
+  # Ensure Keploy and the application are available in the PATH or use absolute paths
+  keployv2 record -c "./ginApp" &
   sleep 10 # Adjust based on application start time
 
   # Make API calls to record
@@ -42,7 +48,8 @@ for i in {1..2}; do
 done
 
 # Run recorded tests
-sudo -E env PATH="$PATH" ./../../keployv2 test -c "./ginApp" --delay 7
+# Ensure Keploy is in the PATH or use an absolute path
+keployv2 test -c "./ginApp" --delay 7
 
 # Process test results for CI/CD feedback
 report_file="./keploy/reports/test-run-0/test-set-0-report.yaml"
