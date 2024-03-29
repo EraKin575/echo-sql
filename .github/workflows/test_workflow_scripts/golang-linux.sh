@@ -4,7 +4,7 @@
 set -e
 
 # Assuming .github/workflows/test_workflow_scripts/test-iid.sh is executable and has the needed shebang
-./.github/workflows/test_workflow_scripts/test-iid.sh
+sudo ./.github/workflows/test_workflow_scripts/test-iid.sh
 
 # Optionally switch to a specific branch if needed
 # Uncomment and set to your required branch if needed
