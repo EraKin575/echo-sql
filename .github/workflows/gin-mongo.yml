@@ -29,7 +29,7 @@ jobs:
       run: sudo mv ./keploy/keploy /usr/local/bin
 
     - name: Verify Keploy installation
-      run: keploy version
+      run: keploy
 
     - name: Run shell script for application setup and testing
       run: |
