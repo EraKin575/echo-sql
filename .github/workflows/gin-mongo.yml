@@ -18,14 +18,8 @@ jobs:
     - name: Build binary
       run: go build -o myapp
 
-    - name: Checkout the samples-go repository
-      uses: actions/checkout@v2
-      with:
-        repository: keploy/samples-go
-        path: ./samples-go
-
-    - name: Run samples-go application
+    # Assuming the shell script is within the current repo, adjust paths as necessary
+    - name: Run shell script for application setup and testing
       run: |
-        cd samples-go/gin-mongo
-        chmod +x ./../../.github/workflows/test_workflow_scripts/golang-linux.sh
-        ./../../.github/workflows/test_workflow_scripts/golang-linux.sh
+        chmod +x ./.github/workflows/test_workflow_scripts/golang-linux.sh
+        ./.github/workflows/test_workflow_scripts/golang-linux.sh
