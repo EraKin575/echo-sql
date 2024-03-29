@@ -15,7 +15,17 @@ jobs:
       with:
         go-version: '^1.16'
 
-    # Assuming the shell script is within the current repo, adjust paths as necessary
+    - name: Clone Keploy repository
+      run: git clone https://github.com/keploy/keploy.git
+
+    - name: Build Keploy from source
+      run: |
+        cd keploy
+        go build -o keploy
+      env:
+        GO111MODULE: on
+
+        
     - name: Run shell script for application setup and testing
       run: |
         chmod +x ./.github/workflows/test_workflow_scripts/golang-linux.sh

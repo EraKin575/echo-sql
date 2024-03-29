@@ -17,9 +17,6 @@ docker run --rm -d -p 27017:27017 --name mongoDb mongo
 
 # Clean existing Keploy configuration if present
 
-curl -O https://raw.githubusercontent.com/keploy/keploy/main/keploy.sh && source keploy.sh
- keploy
-
 # Generate a new Keploy configuration file
 # Ensure keployv2 binary is in the PATH or provide an absolute path
 keploy config --generate
