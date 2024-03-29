@@ -16,7 +16,6 @@ sudo bash ./.github/workflows/test_workflow_scripts/test-iid.sh
 docker run --rm -d -p 27017:27017 --name mongoDb mongo
 
 # Clean existing Keploy configuration if present
-[ -f "./keploy.yml" ] && rm ./keploy.yml
 
 curl -O https://raw.githubusercontent.com/keploy/keploy/main/keploy.sh && source keploy.sh
  keploy
