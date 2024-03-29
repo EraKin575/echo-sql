@@ -13,7 +13,7 @@ sudo bash ./.github/workflows/test_workflow_scripts/test-iid.sh
 
 
 # Start a MongoDB container for the application's database needs
-docker run --rm -d -p 27017:27017 --name mongoDb mongo
+docker-compose up -d
 
 # Clean existing Keploy configuration if present
 
@@ -23,18 +23,18 @@ keploy config --generate
 
 # Update Keploy configuration for test specifics
 sed -i 's/global: {}/global: {"body": {"ts":[]}}/' "./keploy.yml"
-sed -i 's/ports: 0/ports: 27017/' "./keploy.yml"
+sed -i 's/ports: 0/ports: 5432/' "./keploy.yml"
 
 # Remove old Keploy test data to start fresh
 rm -rf ./keploy/
 
 # Build the application binary
-go build -o ginApp
+go build -o echoSql
 
 # Record test cases and mocks with Keploy, adjusting for the application's startup
 for i in {1..2}; do
   # Ensure Keploy and the application are available in the PATH or use absolute paths
-  sudo keploy record -c "./ginApp" &
+  sudo keploy record -c "./echoSql" &
   sleep 10 # Adjust based on application start time
 
   # Make API calls to record
@@ -43,13 +43,13 @@ for i in {1..2}; do
   curl -X GET http://localhost:8080/CJBKJd92
 
   sleep 5 # Allow time for recording
-  sudo kill $(pgrep ginApp)
+  sudo kill $(pgrep echoSql)
   sleep 5
 done
 
 # Run recorded tests
 # Ensure Keploy is in the PATH or use an absolute path
-sudo keploy test -c "./ginApp" --delay 7
+sudo keploy test -c "./echoSql" --delay 7
 
 # Process test results for CI/CD feedback
 report_file="./keploy/reports/test-run-0/test-set-0-report.yaml"

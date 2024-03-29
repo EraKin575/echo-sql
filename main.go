@@ -1,66 +1,57 @@
 package main
 
 import (
-	"context"
-	"net/http"
+	"database/sql"
 	"os"
-	"time"
 
-	"github.com/gin-gonic/gin"
-	"go.mongodb.org/mongo-driver/mongo"
-
-	"os/signal"
-	"syscall"
-
+	"github.com/labstack/echo/v4"
+	_ "github.com/lib/pq"
 	"go.uber.org/zap"
 )
 
-var col *mongo.Collection
-var logger *zap.Logger
+var port = "8082"
+
+var Logger *zap.Logger
+
+var Database *sql.DB
 
 func main() {
-	logger, _ = zap.NewProduction()
-	defer logger.Sync() // flushes buffer, if any
+	if os.Getenv("PORT") != "" {
+		port = os.Getenv("PORT")
+	}
+	var err error
+	Logger, _ = zap.NewProduction()
+	defer Logger.Sync() // flushes buffer
 
-	dbName, collection := "keploy", "url-shortener"
+	Database, err = NewConnection(ConnectionDetails{
+		host: "localhost",
+		// host: "localhost" when using natively
+		//host:     "echo-sql-postgres-1",
+		port:     "5432",
+		user:     "postgres",
+		password: "password",
+		db_name:  "postgres",
+	})
 
-	client, err := New("mongoDb:27017", dbName)
 	if err != nil {
-		logger.Fatal("failed to create mgo db client", zap.Error(err))
-	}
-	db :=client.Database(dbName)
-
-	col =db.Collection(collection)
-
-	port := "8080"
-
-	println("PID:", os.Getpid())
-
-	r := gin.Default()
-
-	r.GET("/:param", getURL)
-	r.POST("/url", putURL)
-	srv := &http.Server{
-		Addr:    ":" + port,
-		Handler: r,
+		Logger.Fatal("Failed to establish connection to local PostgreSQL instance:", zap.Error(err))
 	}
 
-	stopper := make(chan os.Signal, 1)
-	signal.Notify(stopper, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
-	go func() {
-		select {
-		case <-stopper:
-			ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-			defer cancel()
-			if err := srv.Shutdown(ctx); err != nil {
-				logger.Fatal("Server Shutdown:", zap.Error(err))
-			}
-			logger.Info("stopper called")
-		}
-	}()
+	defer Database.Close()
 
-	if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-		logger.Fatal("listen: %s\n", zap.Error(err))
+	// init Keploy
+
+	r := echo.New() // Init echo
+
+	// kecho.EchoV4(k, r) // Tie echo router in with Keploy
+
+	r.GET("/:param", GetURL)
+	r.POST("/url", PutURL)
+	r.DELETE("/:param", DeleteURL)
+	r.PUT("/:param", UpdateURL)
+	err = r.Start(":" + port)
+	if err != nil {
+		panic(err)
 	}
-	logger.Info("server exiting")
+
 }

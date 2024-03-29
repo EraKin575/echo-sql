@@ -1,1 +1,3 @@
-test-app-url-shortener
+postgres-data/
+echo-psql-url-shortener
+log.txt
