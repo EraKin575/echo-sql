@@ -34,7 +34,7 @@ go build -o echoSql
 # Record test cases and mocks with Keploy, adjusting for the application's startup
 for i in {1..2}; do
   # Ensure Keploy and the application are available in the PATH or use absolute paths
-  sudo keploy record -c "./echoSql" --delay 10 &
+  sudo keploy record -c "./echoSql" &
   sleep 10 # Adjust based on application start time
 
   # Make API calls to record
